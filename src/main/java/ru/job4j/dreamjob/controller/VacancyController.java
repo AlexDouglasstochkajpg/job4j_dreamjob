@@ -1,22 +1,22 @@
 package ru.job4j.dreamjob.controller;
 
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import ru.job4j.dreamjob.model.Vacancy;
-import ru.job4j.dreamjob.repository.MemoryVacancyRepository;
-import ru.job4j.dreamjob.repository.VacancyRepository;
-import ru.job4j.dreamjob.service.SimpleVacancyService;
-import ru.job4j.dreamjob.service.VacancyService;
 
-import java.time.LocalDateTime;
+import ru.job4j.dreamjob.service.VacancyService;
 
 @Controller
 @RequestMapping("/vacancies")
 public class VacancyController {
 
-    private final VacancyService vacancyService = SimpleVacancyService.getInstance();
+    private final VacancyService vacancyService;
+
+    public VacancyController(VacancyService vacancyService) {
+        this.vacancyService = vacancyService;
+    }
+
 
     @GetMapping
     public String getAll(Model model) {
