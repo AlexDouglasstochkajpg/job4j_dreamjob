@@ -17,7 +17,6 @@ public class VacancyController {
         this.vacancyService = vacancyService;
     }
 
-
     @GetMapping
     public String getAll(Model model) {
         model.addAttribute("vacancies", vacancyService.findAll());
@@ -65,4 +64,5 @@ public class VacancyController {
         }
         return "redirect:/vacancies";
     }
+
 }

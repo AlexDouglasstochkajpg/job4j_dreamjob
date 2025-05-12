@@ -40,4 +40,5 @@ public class SimpleVacancyService implements VacancyService {
     public Collection<Vacancy> findAll() {
         return vacancyRepository.findAll();
     }
+
 }

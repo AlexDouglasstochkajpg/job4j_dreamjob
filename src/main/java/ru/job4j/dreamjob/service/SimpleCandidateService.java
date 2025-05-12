@@ -40,4 +40,5 @@ public class SimpleCandidateService implements CandidateService {
     public Collection<Candidate> findAll() {
         return candidateRepository.findAll();
     }
+
 }
