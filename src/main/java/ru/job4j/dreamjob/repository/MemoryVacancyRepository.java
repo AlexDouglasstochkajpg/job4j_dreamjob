@@ -67,5 +67,4 @@ public class MemoryVacancyRepository implements VacancyRepository {
     public Collection<Vacancy> findAll() {
         return vacancies.values();
     }
-
 }

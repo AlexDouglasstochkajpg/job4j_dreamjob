@@ -73,5 +73,4 @@ public class CandidateController {
         }
         return "redirect:/candidates";
     }
-
 }
