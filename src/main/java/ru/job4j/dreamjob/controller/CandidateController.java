@@ -1,6 +1,7 @@
 package ru.job4j.dreamjob.controller;
 
-
+import ru.job4j.dreamjob.model.User;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -30,13 +31,15 @@ public class CandidateController {
     }
 
     @GetMapping
-    public String getAll(Model model) {
+    public String getAll(Model model, HttpSession session) {
+        addUserToModel(model, session);
         model.addAttribute("candidates", candidateService.findAll());
         return "candidates/list";
     }
 
     @GetMapping("/create")
-    public String getCreationPage(Model model) {
+    public String getCreationPage(Model model, HttpSession session) {
+        addUserToModel(model, session);
         model.addAttribute("cities", cityService.findAll());
         return "candidates/create";
     }
@@ -44,7 +47,9 @@ public class CandidateController {
     @PostMapping("/create")
     public String create(@ModelAttribute Candidate candidate,
                          @RequestParam MultipartFile file,
-                         Model model) {
+                         Model model,
+                         HttpSession session) {
+        addUserToModel(model, session);
         try {
             candidateService.save(candidate, new FileDto(file.getOriginalFilename(), file.getBytes()));
             return "redirect:/candidates";
@@ -52,10 +57,13 @@ public class CandidateController {
             model.addAttribute("message", exception.getMessage());
             return "errors/404";
         }
+
     }
 
     @GetMapping("/{id}")
-    public String getById(Model model, @PathVariable int id) {
+    public String getById(Model model, @PathVariable int id, HttpSession session) {
+        addUserToModel(model, session);
+
         var candidateOptional = candidateService.findById(id);
         if (candidateOptional.isEmpty()) {
             model.addAttribute("message", "Резюме с указанным идентификатором не найдено");
@@ -66,13 +74,16 @@ public class CandidateController {
         return "candidates/one";
     }
 
+    @PostMapping("/update")
     public String update(@ModelAttribute Candidate candidate,
                          @RequestParam MultipartFile file,
-                         Model model) {
+                         Model model,
+                         HttpSession session) {
+        addUserToModel(model, session);
         try {
             var isUpdated = candidateService.update(candidate,
-                    new FileDto(file.getOriginalFilename(),
-                            file.getBytes()));
+                    new FileDto(file.getOriginalFilename(), file.getBytes()));
+
             if (!isUpdated) {
                 model.addAttribute("message", "Резюме с таким кандидатом не найдено");
                 return "errors/404";
@@ -82,15 +93,26 @@ public class CandidateController {
             model.addAttribute("message", exception.getMessage());
             return "errors/404";
         }
+
     }
 
     @GetMapping("/delete/{id}")
-    public String delete(Model model, @PathVariable int id) {
+    public String delete(Model model, @PathVariable int id, HttpSession session) {
+        addUserToModel(model, session);
         var isDeleted = candidateService.deleteById(id);
         if (!isDeleted) {
             model.addAttribute("message", "Резюме с таким кандидатом не найдено");
             return "errors/404";
         }
         return "redirect:/candidates";
+    }
+
+    private void addUserToModel(Model model, HttpSession session) {
+        var user = (User) session.getAttribute("user");
+        if (user == null) {
+            user = new User();
+            user.setName("Guest");
+        }
+        model.addAttribute("user", user);
     }
 }
