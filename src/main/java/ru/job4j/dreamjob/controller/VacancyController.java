@@ -31,14 +31,12 @@ public class VacancyController {
 
     @GetMapping
     public String getAll(Model model, HttpSession session) {
-        addUserToModel(model, session);
         model.addAttribute("vacancies", vacancyService.findAll());
         return "vacancies/list";
     }
 
     @GetMapping("/create")
     public String getCreationPage(Model model, HttpSession session) {
-        addUserToModel(model, session);
         model.addAttribute("cities", cityService.findAll());
         return "vacancies/create";
     }
@@ -48,7 +46,6 @@ public class VacancyController {
                          @RequestParam(required = false) MultipartFile file,
                          Model model,
                          HttpSession session) {
-        addUserToModel(model, session);
         try {
             FileDto fileDto = null;
             if (file != null && !file.isEmpty()) {
@@ -64,7 +61,6 @@ public class VacancyController {
 
     @GetMapping("/{id}")
     public String getById(Model model, @PathVariable int id, HttpSession session) {
-        addUserToModel(model, session);
         var vacancyOptional = vacancyService.findById(id);
         if (vacancyOptional.isEmpty()) {
             model.addAttribute("message", "Вакансия с указанным идентификатором не найдена");
@@ -80,7 +76,6 @@ public class VacancyController {
                          @RequestParam(required = false) MultipartFile file,
                          Model model,
                          HttpSession session) {
-        addUserToModel(model, session);
         try {
             FileDto fileDto = null;
             if (file != null && !file.isEmpty()) {
@@ -100,21 +95,11 @@ public class VacancyController {
 
     @GetMapping("/delete/{id}")
     public String delete(Model model, @PathVariable int id, HttpSession session) {
-        addUserToModel(model, session);
         var isDeleted = vacancyService.deleteById(id);
         if (!isDeleted) {
             model.addAttribute("message", "Вакансия с указанным идентификатором не найдена");
             return "errors/404";
         }
         return "redirect:/vacancies";
-    }
-
-    private void addUserToModel(Model model, HttpSession session) {
-        var user = (User) session.getAttribute("user");
-        if (user == null) {
-            user = new User();
-            user.setName("Guest");
-        }
-        model.addAttribute("user", user);
     }
 }
